@@ -26,8 +26,12 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post("/user/login")
-def login(user):
-    return {}
+def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    username, password = user.username, user.password
+    db_user = crud.get_user(db, username)
+    if db_user and db_user.password == password:
+        return "JWT_token"
+    return HTTPException(status_code=401)
 
 
 @app.get("/item")
